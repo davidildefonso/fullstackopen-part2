@@ -7,7 +7,7 @@ const Button = ({ handleClick, text }) => (
   </button>
 );
 
-const Statistic = ({text, value}) => {
+const StatisticLine  = ({text, value}) => {
 
 
 
@@ -60,11 +60,11 @@ const StatisticsContainer = ({feedback}) => {
 
 	return (
 		<>
-				<Statistic  text="Good" value={good} />
-				<Statistic  text="Neutral" value={neutral} />
-				<Statistic  text="Bad" value={bad} />
-				<Statistic  text="Average" value={ [ good, neutral, bad ] } />
-				<Statistic  text="Positive" value={ [ good, neutral, bad ] } />
+				<StatisticLine   text="Good" value={good} />
+				<StatisticLine   text="Neutral" value={neutral} />
+				<StatisticLine   text="Bad" value={bad} />
+				<StatisticLine   text="Average" value={ [ good, neutral, bad ] } />
+				<StatisticLine   text="Positive" value={ [ good, neutral, bad ] } />
 		</>
 	);
 
