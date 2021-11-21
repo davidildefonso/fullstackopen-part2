@@ -7,9 +7,41 @@ const Button = ({ handleClick, text }) => (
   </button>
 );
 
-const Statistic = ({text, value}) => ( 
-		<p> {text} {value} </p>
-);
+const Statistic = ({text, value}) => {
+
+
+
+		switch (text) {
+			case "Average":
+
+				const average = ( value[0]  - value[2] ) / ( value[0] + value[1] + value[2] )  ;	
+
+				return ( 
+					<p> {text} {average || 0 } </p>
+				);
+
+				break;
+
+			case "Positive":
+
+				const positive =  value[0] * 100 / ( value[0] + value[1] + value[2] )  ;	
+					 
+				return ( 
+					<p> {text} {positive || 0 } % </p>
+				);
+
+				break;
+		
+			default:
+
+				return ( 
+					<p> {text} {value} </p>
+				);
+
+				break;
+		}
+		
+};
 
 const Title = ({text}) => (
 		<h1> {text} </h1>
@@ -38,6 +70,9 @@ const App = () => {
 				<Statistic  text="Good" value={good} />
 				<Statistic  text="Neutral" value={neutral} />
 				<Statistic  text="Bad" value={bad} />
+				<Statistic  text="Average" value={ [ good, neutral, bad ] } />
+				<Statistic  text="Positive" value={ [ good, neutral, bad ] } />
+
 
     </div>
   );
