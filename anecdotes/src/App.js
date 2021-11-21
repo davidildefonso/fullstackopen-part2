@@ -8,6 +8,28 @@ const Button = ({ handleClick, text }) => (
 );
 
 
+const TopAnecdote = ({votes, anecdotes }) => {
+
+		let top = -1;
+		let position = null;
+
+		votes.forEach((value, index) => {
+				if(value > top) {
+						 position = index;
+						 top = value;
+				} 
+		});
+
+
+		return (
+			<div>
+					<h3> Anecdote with most votes</h3>
+					<p>   {anecdotes[position]}   </p>
+			</div>
+		);
+
+}
+
 const App = () => {
 
 
@@ -24,11 +46,31 @@ const App = () => {
 
    
   const [selected, setSelected] = useState(0);
+	const [votes, setVotes] = useState([0, 0, 0, 0, 0 , 0, 0]);
+
+
+
+	const addVote = () => {
+			const copy = [...votes] ;
+			copy[selected] += 1;
+			setVotes(copy);
+	};
+
+
+
 
   return (
     <div>
-      {anecdotes[selected]}
-			<div><Button text="next anecdote"  handleClick={ () => setSelected(Math.floor(Math.random() * anecdotes.length)) } /></div>
+			<h3> Anecdote of the day </h3>
+      <p>{anecdotes[selected]} </p>
+			<p> has  {votes[selected]}  votes </p>
+			<div>
+				<Button text="next anecdote"  handleClick={ () => setSelected(Math.floor(Math.random() * anecdotes.length)) } />
+				<Button text="vote"  handleClick={ () => addVote() } />
+			</div>
+
+			<TopAnecdote  anecdotes={anecdotes} votes={votes} />
+
     </div>
   )
 }
