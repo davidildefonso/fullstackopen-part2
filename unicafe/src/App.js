@@ -47,6 +47,30 @@ const Title = ({text}) => (
 		<h1> {text} </h1>
 );
 
+const StatisticsContainer = ({feedback}) => {
+	
+	const [good, neutral, bad] = feedback;
+
+	if(good === 0 && neutral === 0 && bad === 0){
+
+			return (
+				<p>No feedback given</p>
+			);
+	}
+
+	return (
+		<>
+				<Statistic  text="Good" value={good} />
+				<Statistic  text="Neutral" value={neutral} />
+				<Statistic  text="Bad" value={bad} />
+				<Statistic  text="Average" value={ [ good, neutral, bad ] } />
+				<Statistic  text="Positive" value={ [ good, neutral, bad ] } />
+		</>
+	);
+
+
+}
+
 const App = () => {
 
   const [good, setGood] = useState(0);
@@ -55,25 +79,12 @@ const App = () => {
 
   return (
      <div>
-
-		 		<Title text="Give Feedback" />
-			
+		 		<Title text="Give Feedback" />			
 				<Button handleClick={() => setGood(good +  1)}  text="Good" />
-
-				<Button handleClick={() => setNeutral(neutral + 1)}  text="Neutral" />
-		
+				<Button handleClick={() => setNeutral(neutral + 1)}  text="Neutral" />		
 				<Button handleClick={() => setBad(bad + 1)}   text="Bad" />
-
-
 				<Title text="Statistics" />
-
-				<Statistic  text="Good" value={good} />
-				<Statistic  text="Neutral" value={neutral} />
-				<Statistic  text="Bad" value={bad} />
-				<Statistic  text="Average" value={ [ good, neutral, bad ] } />
-				<Statistic  text="Positive" value={ [ good, neutral, bad ] } />
-
-
+				<StatisticsContainer feedback = {[ good, neutral, bad ]}  /> 
     </div>
   );
 }
