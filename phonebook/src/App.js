@@ -1,55 +1,83 @@
 import React, { useState } from "react";
-import Note from "./components/Note.js";
-
+import Section from "./components/Section.js";
 
 const App = ({ data }) => {
-  const [notes, setNotes] = useState(data)
- 	const [newNote, setNewNote] = useState(
-    'a new note...'
-  );
-	const [showAll, setShowAll] = useState(false);
 
-  const addNote = (event) => {
+	const [ persons, setPersons ] = useState([
+     	{ name: 'Arto Hellas', number: '040-123456', id: 1 },
+			{ name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+			{ name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+			{ name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
+  ]) ;
+  const [ newName, setNewName ] = useState('');
+	const [ newPhone, setNewPhone ] = useState('');
+	const [ filter, setFilter ] = useState(false);
+	const [ searchName, setSearchName ] = useState("");
+
+  const addPerson = (event) => {
     event.preventDefault()
 
-    const noteObject = {
-			content: newNote,
-			date: new Date().toISOString(),
-			important: Math.random() < 0.5,
-			id: notes.length + 1,
+		if(persons.find(person =>  person.name === newName)){
+				alert(`${newName} is already added to phonebook`)
+				return;
 		}
 
-		setNotes(notes.concat(noteObject))
-		setNewNote('')
+    const personObject = {
+			name: newName,
+			number: newPhone,		
+			id: persons.length + 1,
+		}
+
+		setPersons(persons.concat(personObject));
+		setNewName('');
+		setNewPhone('');
+  
+	}
+
+	const handleNewNameChange = (event) => {   
+    setNewName(event.target.value)
   }
 
-	const handleNoteChange = (event) => {
-    console.log(event.target.value)
-    setNewNote(event.target.value)
+	const handleNewPhoneChange = (event) => {   
+
+    setNewPhone(event.target.value)
   }
 
-	const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important ) ; 
+	const handleSearchChange = (event) => {  
+			setSearchName(event.target.value); 
+			if(event.target.value !== ""){
+				setFilter(true);
+				return;
+			}
+			setFilter(false);
+  }
+
+	const numbersToShow = () => {
+			if(!filter) return persons;
+			return persons.filter(person =>  person.name.match(new RegExp(searchName, "i")));
+	} 
+
+
+
+
 
   return (
-    <div>
-      <h1>Notes</h1>
+   
+
 			<div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all' }
-        </button>
-      </div>
-      <ul>
-        {notesToShow.map(note => 
-            <Note key={note.id} note={note} />
-        )}
-      </ul>
-			 <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
-        <button type="submit">save</button>
-      </form> 
-    </div>
+
+					<Section title={"Phonebook"}  changeHandler = {handleSearchChange}  value = {searchName} label = {"filter shown with:"}   section = { "title"}  />
+
+
+					<Section title={"Add new number"}  changeHandlerName = {handleNewNameChange}  valueName = {newName} labelName = {"name:"}   section = { "form"} 
+						changePhoneHandler = {handleNewPhoneChange}  valuePhone = {newPhone} labelPhone = {"phone:"}  buttonText = {"add"}  addPerson = {addPerson} />
+
+					<Section title={"Numbers"}  persons = {numbersToShow()}   section = { "persons"}  />
+
+			</div>
+		
+
+
   )
 };
 
