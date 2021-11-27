@@ -1,5 +1,6 @@
 import React, { useState , useEffect} from "react";
 import Section from "./components/Section.js";
+import Notification from "./components/Notification.js";
 import personService from './services/persons.js';
 
 const App = ({ data }) => {
@@ -11,6 +12,7 @@ const App = ({ data }) => {
 	const [ newPhone, setNewPhone ] = useState('');
 	const [ filter, setFilter ] = useState(false);
 	const [ searchName, setSearchName ] = useState("");
+	const [message, setMessage] = useState(null);
 
 	useEffect(  () => {	
 			fetchData();		
@@ -19,7 +21,15 @@ const App = ({ data }) => {
 	async function fetchData() {
 			const data = await personService.getAll();
 			setPersons(data);
+	};
+
+	const showNotification = (msg, type = "success") => {
+			  setMessage( {msg, type} );
+				setTimeout(() => {
+					setMessage(null)
+				}, 5000)
 	}
+
 
 
   const addPerson = async (event) => {
@@ -37,8 +47,14 @@ const App = ({ data }) => {
 				const confirmUpdateNumber = window.confirm(` ${ newName } was already added to the phonebook, do you want to replace their phone number ?`);
 
 				if(confirmUpdateNumber){
-						const data = await personService.update(personExists.id, personObject);
-						setPersons(persons.map(person => person.id === data.id ?  data : person  ));
+						try{
+								const data = await personService.update(personExists.id, personObject);
+								setPersons(persons.map(person => person.id === data.id ?  data : person  ));
+								showNotification(`${data.name} number was updated.`);
+						}catch(e){
+								showNotification(`Information of ${personExists.name} was already deleted from the server.`, `error`);
+						}
+						
 				}
 				
 				setNewName('');
@@ -52,6 +68,7 @@ const App = ({ data }) => {
 		setPersons(persons.concat(data));
 		setNewName('');
 		setNewPhone('');
+		showNotification(`${personObject.name}  was added to the phonebook.`);
   
 	}
 
@@ -79,10 +96,12 @@ const App = ({ data }) => {
 	} ;
 
 	const handleClick = async (id)  => {
-			const confirmDelete = window.confirm(`Are you sure to delete person ${ persons.find(person => person.id === id).name } from the phonebook?`);
+			const targetPerson = persons.find(person => person.id === id).name ;
+			const confirmDelete = window.confirm(`Are you sure to delete  ${ targetPerson } from the phonebook?`);
 			if(confirmDelete){
 					await personService.remove(id);
 					setPersons(persons.filter(person => person.id !== id));
+					showNotification(`${targetPerson}  was deleted from  the phonebook.`);
 			}
 		
 	};
@@ -94,6 +113,7 @@ const App = ({ data }) => {
 			
 
 					<div>
+							<Notification message = {message} />
 
 							<Section title={"Phonebook"}  changeHandler = {handleSearchChange}  value = {searchName} label = {"filter shown with:"}   section = { "title"}  />
 
