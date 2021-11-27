@@ -32,7 +32,7 @@ const Section = (  props  ) => {
 	return (
 	 		<>
 						<h2>{props.title}</h2>
-						<UList  data = {props.persons}  />								
+						<UList  data = {props.persons} handleClick = {props.handleClick} />								
 			</>				
 	);
 }

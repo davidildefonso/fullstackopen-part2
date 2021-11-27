@@ -1,6 +1,6 @@
 import React, { useState , useEffect} from "react";
 import Section from "./components/Section.js";
-import axios from 'axios';
+import personService from './services/persons.js';
 
 const App = ({ data }) => {
 
@@ -17,26 +17,39 @@ const App = ({ data }) => {
 	}, []);
 
 	async function fetchData() {
-			const response = await axios.get('http://localhost:3001/persons');
-			setPersons(response.data);
+			const data = await personService.getAll();
+			setPersons(data);
 	}
 
 
-  const addPerson = (event) => {
-    event.preventDefault()
+  const addPerson = async (event) => {
+    event.preventDefault();
 
-		if(persons.find(person =>  person.name === newName)){
-				alert(`${newName} is already added to phonebook`)
-				return;
-		}
-
-    const personObject = {
+		const personObject = {
 			name: newName,
 			number: newPhone,		
-			id: persons.length + 1,
-		}
+		};
 
-		setPersons(persons.concat(personObject));
+		const personExists = persons.find(person =>  person.name === newName);
+
+		if(personExists){
+
+				const confirmUpdateNumber = window.confirm(` ${ newName } was already added to the phonebook, do you want to replace their phone number ?`);
+
+				if(confirmUpdateNumber){
+						const data = await personService.update(personExists.id, personObject);
+						setPersons(persons.map(person => person.id === data.id ?  data : person  ));
+				}
+				
+				setNewName('');
+				setNewPhone('');
+
+				return;
+		}
+  
+
+		const data = await personService.create(personObject);
+		setPersons(persons.concat(data));
 		setNewName('');
 		setNewPhone('');
   
@@ -63,7 +76,16 @@ const App = ({ data }) => {
 	const numbersToShow = () => {
 			if(!filter) return persons;
 			return persons.filter(person =>  person.name.match(new RegExp(searchName, "i")));
-	} 
+	} ;
+
+	const handleClick = async (id)  => {
+			const confirmDelete = window.confirm(`Are you sure to delete person ${ persons.find(person => person.id === id).name } from the phonebook?`);
+			if(confirmDelete){
+					await personService.remove(id);
+					setPersons(persons.filter(person => person.id !== id));
+			}
+		
+	};
 
 
 
@@ -79,7 +101,7 @@ const App = ({ data }) => {
 							<Section title={"Add new number"}  changeHandlerName = {handleNewNameChange}  valueName = {newName} labelName = {"name:"}   section = { "form"} 
 								changePhoneHandler = {handleNewPhoneChange}  valuePhone = {newPhone} labelPhone = {"phone:"}  buttonText = {"add"}  addPerson = {addPerson} />
 
-							<Section title={"Numbers"}  persons = {numbersToShow()}   section = { "persons"}  />
+							<Section title={"Numbers"}  persons = {numbersToShow()} handleClick = {handleClick}  section = { "persons"}  />
 
 					</div>
 				
