@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import Section from "./components/Section.js";
+import axios from 'axios';
 
 const App = ({ data }) => {
 
-	const [ persons, setPersons ] = useState([
-     	{ name: 'Arto Hellas', number: '040-123456', id: 1 },
-			{ name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-			{ name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-			{ name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ]) ;
+
+
+	const [ persons, setPersons ] = useState() ;
   const [ newName, setNewName ] = useState('');
 	const [ newPhone, setNewPhone ] = useState('');
 	const [ filter, setFilter ] = useState(false);
 	const [ searchName, setSearchName ] = useState("");
+
+	useEffect(  () => {	
+			fetchData();		
+	}, []);
+
+	async function fetchData() {
+			const response = await axios.get('http://localhost:3001/persons');
+			setPersons(response.data);
+	}
+
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -59,26 +67,30 @@ const App = ({ data }) => {
 
 
 
+	if(numbersToShow()){
+			return (
+			
+
+					<div>
+
+							<Section title={"Phonebook"}  changeHandler = {handleSearchChange}  value = {searchName} label = {"filter shown with:"}   section = { "title"}  />
 
 
-  return (
-   
+							<Section title={"Add new number"}  changeHandlerName = {handleNewNameChange}  valueName = {newName} labelName = {"name:"}   section = { "form"} 
+								changePhoneHandler = {handleNewPhoneChange}  valuePhone = {newPhone} labelPhone = {"phone:"}  buttonText = {"add"}  addPerson = {addPerson} />
 
-			<div>
+							<Section title={"Numbers"}  persons = {numbersToShow()}   section = { "persons"}  />
 
-					<Section title={"Phonebook"}  changeHandler = {handleSearchChange}  value = {searchName} label = {"filter shown with:"}   section = { "title"}  />
-
-
-					<Section title={"Add new number"}  changeHandlerName = {handleNewNameChange}  valueName = {newName} labelName = {"name:"}   section = { "form"} 
-						changePhoneHandler = {handleNewPhoneChange}  valuePhone = {newPhone} labelPhone = {"phone:"}  buttonText = {"add"}  addPerson = {addPerson} />
-
-					<Section title={"Numbers"}  persons = {numbersToShow()}   section = { "persons"}  />
-
-			</div>
-		
+					</div>
+				
 
 
-  )
+			)
+	}
+
+	return null ;
+
+
 };
 
 export default App;
