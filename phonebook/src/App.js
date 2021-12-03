@@ -52,7 +52,8 @@ const App = ({ data }) => {
 								setPersons(persons.map(person => person.id === data.id ?  data : person  ));
 								showNotification(`${data.name} number was updated.`);
 						}catch(e){
-								showNotification(`Information of ${personExists.name} was already deleted from the server.`, `error`);
+		
+								showNotification(e.response.data.error);
 						}
 						
 				}
@@ -64,11 +65,17 @@ const App = ({ data }) => {
 		}
   
 
-		const data = await personService.create(personObject);
-		setPersons(persons.concat(data));
-		setNewName('');
-		setNewPhone('');
-		showNotification(`${personObject.name}  was added to the phonebook.`);
+		try {
+				const data = await personService.create(personObject);
+				setPersons(persons.concat(data));
+				setNewName('');
+				setNewPhone('');
+		} catch (e) {
+				
+				showNotification(e.response.data.error);
+		}
+	
+	
   
 	}
 
